@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
+    <title>ana</title>
+  </head>
+  <body>
+    <nav class="navbar navbar-dark bg-primary mb-3">
+      <div class="container">
+        <a href="#" class="navbar-brand">ana</a>
+      </div>
+    </nav>
+    <div class="container postsContainer">
+      <div class="card card-body card-form">
+        <h1>Write a note</h1>
+        <p class="lead">Notes forever</p>
+        <div class="form-group">
+          <input type="text" name="noteTitle" id="noteTitle" class="form-control" placeholder="note title (optional)">
+        </div>
+        <br>
+        <div class="form-group">
+          <textarea type="text" name="noteBody" id="noteBody" class="form-control" placeholder="your note goes here"></textarea>
+          <input type="hidden" id="id" value="">
+          <br>
+          <button id="submitBtn" class="post-submit btn btn-primary btn-block">
+            Submit
+          </button>
+          <span class="form-end"></span>
+        </div>
+      </div>
+      <br>
+      <div id="notesContainer"></div>
+    </div>
+    <footer class="mt-5 p-3 text-center bg-light">ana</footer>
+    <script>//''
+let url = "http://localhost:5000/api/v1/notes";
+// Get posts on DOM load
+document.addEventListener("DOMContentLoaded", getNotes);
+async function getNotes() {
+    try {
+        const notes = await fetch(url);
+        const notesData = await notes.json();
+        showNotes(notesData);
+    } catch (error) {
+        console.log(error);
+    }
+}
+const noteContainer = document.getElementById("notesContainer");
+async function showNotes(notes) {
+    let notePayload = notes.data;
+    let output = "";
+    notePayload.forEach((note)=>{
+        output += `
+        <div class="card mb-3">
+        <div class="card-body">
+        <h4 class="card-title">
+        ${note.title}
+        </h4>
+        <p class="card-text">
+        ${note.noteBody}
+       </p>
+       <a href="#" class="edit card-link" data-id="${note.id}">Edit</a>
+       <a href="#" class="delete card-link" data-id="${note.id}">Delete</a>
+        </div>
+        </div>
+        `;
+        noteContainer.innerHTML = output;
+    });
+}
+// add post
+const submitBtn = document.getElementById("submitBtn");
+submitBtn.addEventListener("click", submitNote);
+async function submitNote() {
+    const title = document.getElementById("noteTitle").value;
+    const body = document.getElementById("noteBody").value;
+    const noteData = {
+        title,
+        body
+    };
+    try {
+        const postNote = await fetch(url, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(noteData)
+        });
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+</script>
+  <script src="/ana-frontend.3464ddca.js"></script></body>
+</html>
